@@ -38,8 +38,7 @@ The methodology emphasizes a step-by-step, detailed approach to understand the d
 9.  [Prediction and Submission File Generation](#prediction-and-submission-file-generation)
 10. [Results Summary](#results-summary)
 11. [Future Work and Potential Improvements](#future-work-and-potential-improvements)
-12. [Repository Structure](#repository-structure)
-13. [How to Run](#how-to-run)
+12. [How to Run](#how-to-run)
 
 ---
 
