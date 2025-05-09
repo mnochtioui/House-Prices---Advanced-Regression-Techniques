@@ -277,8 +277,9 @@ The LightGBM model provided the best performance with a mean cross-validated RMS
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
-    cd <repository_name>
+    git clone https://github.com/sonuprasad23/House-Prices---Advanced-Regression-Techniques.git
+
+    cd House-Prices---Advanced-Regression-Techniques
     ```
 2.  **Set up the environment:**
     *   It is recommended to use a virtual environment (e.g., `venv` or `conda`).
