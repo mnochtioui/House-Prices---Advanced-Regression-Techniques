@@ -107,39 +107,59 @@ EDA was performed on the training portion of the data to understand distribution
 
 ### 5.1. Target Variable Analysis (`SalePrice`)
 
-*   **Distribution:** The `SalePrice` showed significant positive (right) skewness (skewness ~1.88) and leptokurtosis (kurtosis ~6.54).
-    *(Optional: Insert histogram and Q-Q plot of original `SalePrice` here).*
+*   **Distribution:** The `SalePrice` showed significant positive (right) skewness...
+    ![Distribution and Q-Q Plot of Original SalePrice](images/original_saleprice_distribution_qqplot.png)
 *   **Transformation:** A natural logarithm transformation (`np.log(SalePrice)`) was applied. The transformed target, `SalePrice_Log`, exhibited a much more symmetrical, normal-like distribution (skewness ~0.12, kurtosis ~0.81). This transformed target was used for modeling.
-    *(Optional: Insert histogram and Q-Q plot of `SalePrice_Log` here).*
+    ![Distribution and Q-Q Plot of Log-Transformed SalePrice](images/log_saleprice_distribution_qqplot.png)
 
 ### 5.2. Numerical Feature Analysis
 
+This section delves into the relationships between numerical predictor features and the log-transformed target variable (`SalePrice_Log`), as well as relationships among the numerical predictors themselves.
+
 *   **Correlation with Target (`SalePrice_Log`):**
-    *   `OverallQual` showed the highest correlation (0.82).
-    *   Other strongly correlated features included `GrLivArea` (0.70), `GarageCars` (0.68), `GarageArea` (0.65), `TotalBsmtSF` (0.61), `1stFlrSF` (0.60), `FullBath` (0.59), `YearBuilt` (0.59).
-    *(Optional: Insert bar plot of top features correlated with `SalePrice_Log` here).*
-*   **Scatter Plots:** Visualized relationships between top numerical predictors and `SalePrice_Log`.
-    *   `OverallQual`, `GrLivArea`, `TotalBsmtSF`, `1stFlrSF` showed clear positive linear trends.
-    *   `YearBuilt` showed a positive trend, potentially non-linear for older houses.
-    *   Outliers were noted, particularly for `GrLivArea` (large area, low price).
-    *(Optional: Insert a grid of scatter plots here, e.g., `OverallQual vs. SalePrice_Log`, `GrLivArea vs. SalePrice_Log`, etc.).*
-*   **Multicollinearity:** A heatmap of the numerical feature correlation matrix was examined.
-    *   High correlations observed between:
-        *   `GarageArea` and `GarageCars` (0.88)
-        *   `TotRmsAbvGrd` and `GrLivArea` (0.83)
-        *   `1stFlrSF` and `TotalBsmtSF` (0.82)
-    *   This information is important for model selection and interpretation.
-    *(Optional: Insert correlation heatmap here).*
+    The Pearson correlation coefficient was calculated between each numerical feature and `SalePrice_Log`.
+    *   `OverallQual` exhibited the strongest positive correlation (0.82).
+    *   Other features with significant positive correlations included `GrLivArea` (0.70), `GarageCars` (0.68), `GarageArea` (0.65), `TotalBsmtSF` (0.61), `1stFlrSF` (0.60), `FullBath` (0.59), and `YearBuilt` (0.59).
+    *   The visualization below shows the top 15 numerical features ranked by their correlation with `SalePrice_Log`.
+
+    ![Top 15 Numerical Features Correlated with Log(SalePrice)](images/top_numerical_correlations_barplot.png)
+
+*   **Scatter Plots of Key Predictors vs. Target:**
+    To visually inspect the nature of these relationships, scatter plots were generated for the most influential numerical predictors against `SalePrice_Log`.
+    *   Features like `OverallQual`, `GrLivArea`, `TotalBsmtSF`, and `1stFlrSF` displayed clear positive linear trends with `SalePrice_Log`.
+    *   `GarageCars` showed a stepped positive relationship, as expected for a discrete count.
+    *   `YearBuilt` indicated a general positive trend (newer houses tend to be more expensive), though the relationship appeared less strictly linear, especially for much older homes.
+    *   These plots also helped identify potential outliers, such as a few properties with very large `GrLivArea` but unexpectedly moderate `SalePrice_Log`.
+
+    ![Scatter Plots of Key Numerical Features vs. Log(SalePrice)](images/numerical_features_scatter_plots.png)
+
+*   **Multicollinearity Analysis:**
+    To understand the inter-correlations among numerical predictor features, a heatmap of their correlation matrix was generated. This is crucial for identifying potential multicollinearity, which can affect the stability and interpretability of some regression models.
+    *   Strong positive correlations (indicative of multicollinearity) were observed between several pairs of features, most notably:
+        *   `GarageArea` and `GarageCars` (correlation coefficient: ~0.88)
+        *   `TotRmsAbvGrd` and `GrLivArea` (correlation coefficient: ~0.83)
+        *   `1stFlrSF` and `TotalBsmtSF` (correlation coefficient: ~0.82)
+    *   These high correlations suggest that these pairs of features carry redundant information. While tree-based models are generally robust to multicollinearity, this would be a key consideration if using linear regression models, potentially requiring feature selection or dimensionality reduction.
+
+    ![Correlation Matrix Heatmap of Numerical Features](images/numerical_correlation_heatmap.png)
 
 ### 5.3. Categorical Feature Analysis
 
-*   **Box Plots:** Used to visualize the distribution of `SalePrice_Log` across categories of key categorical features.
-    *   `Neighborhood`: Showed significant variation in prices, highlighting its importance.
-    *   Quality-related features (`BsmtQual`, `KitchenQual`): Demonstrated a clear positive relationship between higher quality and higher prices.
-    *   `SaleCondition`, `HouseStyle`: Also showed distinct price patterns across their categories.
-    *(Optional: Insert a grid of box plots here, e.g., `Neighborhood vs. SalePrice_Log`, `KitchenQual vs. SalePrice_Log`, etc.).*
+The influence of categorical features on `SalePrice_Log` was investigated using box plots. These plots effectively visualize the distribution of the target variable across the different categories within each selected feature.
 
----
+*   **Key Observations from Box Plots:**
+    Several categorical features demonstrated a strong relationship with `SalePrice_Log`:
+    *   **`Neighborhood`**: This feature proved to be a very strong predictor, with significant variations in median `SalePrice_Log` observed across different neighborhoods. Some neighborhoods (e.g., `NridgHt`, `NoRidge`) consistently commanded higher prices, while others (e.g., `MeadowV`, `IDOTRR`) were associated with lower prices. The variance in prices also differed, with some neighborhoods showing tighter price distributions than others.
+    *   **Quality-related Features (`BsmtQual`, `KitchenQual`)**: A clear, monotonic positive trend was evident. Higher quality ratings (e.g., "Excellent" - `Ex`) for basements and kitchens consistently corresponded to higher median `SalePrice_Log` values compared to lower quality ratings (e.g., "Fair" - `Fa` or "Typical/Average" - `TA`).
+    *   **`HouseStyle`**: Different dwelling styles were associated with different price ranges. For instance, "2.5Fin" (2 and 1/2 story finished) and "2Story" styles generally had higher median prices than styles like "1.5Unf" (1 and 1/2 story unfinished).
+    *   **`SaleCondition`**: The condition of the sale also impacted prices. "Partial" sales (often new constructions) had the highest median `SalePrice_Log`, followed by "Normal" sales. "Abnormal" sales (e.g., foreclosures) and "Family" sales tended to have lower median prices.
+
+*   **Implications for Modeling:**
+    The distinct patterns observed confirm that these categorical features (and others not explicitly plotted but likely showing similar trends) are valuable predictors. They will require appropriate encoding (e.g., one-hot encoding) to be used in most machine learning models.
+
+The following image presents a selection of these box plots, illustrating the relationship between key categorical features and `Log(SalePrice)`:
+
+![Box Plots of Key Categorical Features vs. Log(SalePrice)](images/categorical_features_box_plots.png)
 
 ## 6. Feature Engineering
 
@@ -251,28 +271,6 @@ The LightGBM model provided the best performance with a mean cross-validated RMS
 *   **Ensembling/Stacking:** Combine predictions from multiple diverse, strong models (e.g., weighted averaging, stacking regressor) to potentially improve robustness and accuracy.
 *   **Error Analysis:** Deep dive into instances where the model makes large errors during cross-validation to identify patterns and guide further feature engineering or model adjustments.
 *   **Alternative Models:** Experiment with other regression algorithms like XGBoost, CatBoost, or even Neural Networks if deemed appropriate.
-
----
-
-## 12. Repository Structure
-.
-├── data/ # Raw data files (train.csv, test.csv, etc.)
-│ ├── train.csv
-│ ├── test.csv
-│ ├── sample_submission.csv
-│ └── data_description.txt
-├── notebooks/ # Jupyter notebooks
-│ └── house_price_prediction.ipynb
-├── submissions/ # Generated submission files
-│ └── submission_lightgbm.csv
-├── images/ # (Optional) EDA plots and other visuals
-│ └── saleprice_distribution.png
-│ └── feature_correlations.png
-│ └── ...
-├── .gitignore
-└── README.md
-
-*(Adjust the repository structure above to match your actual file organization).*
 
 ---
 
